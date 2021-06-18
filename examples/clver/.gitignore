@@ -1,0 +1,3 @@
+data/
+CLEVR_val_questions.json
+yolo/yolov3_ckpt_150.pth
