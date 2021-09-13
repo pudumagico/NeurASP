@@ -25,7 +25,7 @@ def termPath2dataList(termPath, img_size, domain):
 
     for _, img in dataloader:
         # img = Variable(img.type(torch.FloatTensor))
-        # img = img.to("cuda")
+        img = img.to("cuda")
         with torch.no_grad():
             output = yolo(img)
 

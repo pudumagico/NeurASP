@@ -67,7 +67,8 @@ class NeurASP(object):
         out = re.search(regex, nnAtom)
         m = out.group(1)
         e, t = out.group(2).split(',', 1) # in case t is of the form t1,...,tk, we only split on the first comma
-        domain = out.group(3).split(',')
+        # domain = out.group(3).split(',')
+        domain = re.findall(r"obj\([0-9a-zA-Z,]*\)", out.group(3))
         t = self.constReplacement(t)
         # check the value of e
         e = e.strip()
@@ -171,7 +172,7 @@ class NeurASP(object):
             return True
         return False
 
-        
+
     def infer(self, dataDic, obs='', mvpp='', postProcessing=None):
         """
         @param dataDic: a dictionary that maps terms to tensors/np-arrays
@@ -337,7 +338,7 @@ class NeurASP(object):
                         elif method == 'sampling':
                             models = dmvpp.sample_obs(obsList[dataIdx], num=10)
                             gradients = dmvpp.mvppLearn(models)
-                        elif method == 'nn_prediction': 
+                        elif method == 'nn_prediction':
                             models = dmvpp.find_one_most_probable_SM_under_obs_noWC()
                             check = self.satisfy(models[0], self.mvpp['program_asp'] + obsList[dataIdx])
                             gradients = dmvpp.mvppLearn(models) if check else -dmvpp.mvppLearn(models)
@@ -416,7 +417,7 @@ class NeurASP(object):
                     total += target.shape[0]
                     singleCorrect += correctionMatrix.sum().item()
                     singleTotal += target.numel()
-                else: 
+                else:
                     pred = np.array([int(i[0]<0.5) for i in output.tolist()])
                     target = target.numpy()
                     correct += (pred.reshape(target.shape) == target).sum()
@@ -424,7 +425,7 @@ class NeurASP(object):
         accuracy = 100. * correct / total
         singleAccuracy = 100. * singleCorrect / singleTotal
         return accuracy, singleAccuracy
-    
+
     # We interprete the most probable stable model(s) as the prediction of the inference mode
     # and check the accuracy of the inference mode by checking whether the obs is satisfied by the prediction
     def testInferenceResults(self, dataList, obsList):
