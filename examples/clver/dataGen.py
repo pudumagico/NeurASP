@@ -1,5 +1,5 @@
 import torch
-from torch.autograd import Variable
+from tqdm import tqdm
 
 from yolo.detect import create_data_loader
 # from yolo.models import Darknet
@@ -23,9 +23,9 @@ def termPath2dataList(termPath, img_size, domain):
     term, path = termPath.split(' ')
     dataloader = create_data_loader(path, 1, img_size, 1)
 
-    for _, img in dataloader:
+    for _, img in tqdm(dataloader):
         # img = Variable(img.type(torch.FloatTensor))
-        # img = img.to("cuda")
+        img = img.to("cuda")
         with torch.no_grad():
             output = yolo(img)
 
@@ -45,7 +45,7 @@ def postProcessing(output, term, domain, num_classes=96, conf_thres=0.3, nms_thr
         for detection in detections:
             for idx, (x1, y1, x2, y2, cls_conf, cls_pred) in enumerate(detection):
                 terms = '{},b{}'.format(term, idx)
-                facts += 'box({}, {}, {}, {}, {}).\n'.format(terms, int(x1), int(y1), int(x2), int(y2))
+                facts += 'box({}, {}, {}, {}, {}).\n'.format(terms, max(0, int(x1)), max(0, int(y1)), max(0, int(x2)), max(0, int(y2)))
                 className = '{}'.format(cls_name[int(cls_pred)])
                 X = torch.zeros([1, len(domain)], dtype=torch.float64)
                 if className in domain:

@@ -201,7 +201,7 @@ class MVPP(object):
         models = []
         clingo_control.add("base", [], program)
         clingo_control.ground([("base", [])])
-        clingo_control.solve(None, lambda model: models.append(model.symbols(atoms=True)))
+        clingo_control.solve(on_model=lambda model: models.append(model.symbols(atoms=True)))
         models = [[str(atom) for atom in model] for model in models]
         return [models[-1]]
 

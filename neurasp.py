@@ -67,7 +67,7 @@ class NeurASP(object):
         out = re.search(regex, nnAtom)
         m = out.group(1)
         e, t = out.group(2).split(',', 1) # in case t is of the form t1,...,tk, we only split on the first comma
-        domain = out.group(3).split(',')
+        domain = re.findall(r"obj\([a-zA-Z0-9,]*\)", out.group(3))
         t = self.constReplacement(t)
         # check the value of e
         e = e.strip()
